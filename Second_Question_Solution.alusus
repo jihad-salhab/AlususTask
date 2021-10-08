@@ -1,0 +1,77 @@
+import "Srl/Net";
+import "Srl/Console";
+import "Srl/Memory";
+import "Srl/String";
+import "Srl/Array";
+import "Srl/System";
+use Srl;
+
+//I would've loved to make this code cleaner.
+//Due to lack of clear documentation refactoring the code and avoiding redundancy was pretty hard.
+//I encountered serveral obstacles such as no Struct support so I approached the solution using class 
+// but met an error or a lack of knowledge about defining an array of type class
+//I also tried using the metioned sort algorithm in the documentation to try and avoid redundancy in my code, but met an error 
+// Where passing the comparer function as a parameter resulted in several unclear errors.
+func sortDataAndPrint(csv: String) {
+  def lines: Array[String] = csv.split("\n");
+  if lines.getLength() < 2 {
+      Console.print("Invalid data received:\n%s\n", csv.buf);
+      System.exit(1);
+  }
+  def name : Array[String]=csv.split("\n");
+  def profession : Array[String]=csv.split("\n");
+  def i: Int;
+  for i = 1, i < lines.getLength(), ++i {
+    if lines(i).trim() == "" continue;
+    name(i) =lines(i).split(",")(0); 
+    profession(i) =lines(i).split(",")(1); 
+  }
+  //The better approach was using a structure like a class or a struct, but many obstacles arose
+  // Sorting According to Profession
+  def r: Int;
+    def j: Int;
+    for r = 1, r < profession.getLength()-1 , ++r {
+        for j = r + 1, j < profession.getLength(), ++j {
+            if profession(r)(0)>profession(j)(clear0) {
+                def temp: String = profession(r);
+                profession(r) =profession(j);
+                profession(j)=temp;
+                //Switching name array also to avoid data mismatch in index
+                temp=name(r);
+                name(r) =name(j);
+                name(j)=temp;
+            }
+        }
+    }
+  // Sorting According to Name
+     def z: Int;
+    def q: Int;
+    for z= 1, z < name.getLength()-1 , ++z {
+        for q = z+ 1, q < name.getLength(), ++q{
+            if name(z)(0)>name(q)(0) {
+                def temp: String = profession(z);
+                profession(z) =profession(q);
+                profession(q)=temp;
+                //Switching name array also to avoid data mismatch in index
+                temp=name(z);
+                name(z) =name(q);
+                name(q)=temp;
+            }
+        }
+    }
+  def index1: int;
+  for index1=2, index1<profession.getLength(), index1++ {
+     Console.print(name(index1)+"-"+profession(index1)+"\n\n");
+  };
+}
+
+def data: CharsPtr;
+def size: Int;
+if Net.get("https://labiny.000webhostapp.com/people.csv", data~ptr, size~ptr) {
+  Console.print("CSV fetched from web\n\n");
+  def str: String = data;
+  Memory.free(data);
+  sortDataAndPrint(str);
+} else {
+  Console.print("Failed to fetch data from the web.\n");
+}
